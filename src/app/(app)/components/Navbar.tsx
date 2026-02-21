@@ -29,6 +29,8 @@ const menuItems = [
     { title: 'Sensor Data', href: '/sensor-data' },
     { title: 'Upload Recent Image', href: '/upload-recent-image' },
     { title: 'Water Quality Map', href: '/water-quality-map' },
+    { title: 'Water Threat', href: '/water-threat' },
+    { title: 'Land', href: '/land' },
     { title: 'Vegetation Map', href: '/vegetation-map' },
 ];
 

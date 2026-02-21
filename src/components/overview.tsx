@@ -22,6 +22,7 @@ export function Overview() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
+          interval={0}
         />
         <YAxis
           type="number"
@@ -29,7 +30,7 @@ export function Overview() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `${value}`}
+          tickFormatter={(value: number) => `${value}`}
         />
         <Bar dataKey="total" fill="#002163" radius={[4, 4, 0, 0]} barSize={100} />
       </BarChart>

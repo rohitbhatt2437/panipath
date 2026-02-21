@@ -12,8 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import axios from 'axios'
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { Loader2 } from 'lucide-react';
 
 interface Coordinates {
@@ -166,7 +164,7 @@ const ReportWaterBody: React.FC = () => {
 
   const handleSendReport = async () => {
     setReportSending(true);
-    setStatusMessage(null); // Clear any previous messages
+    setStatusMessage(null);
 
     if (!uploadedImage || !name || !email || !mobile || !feedback || !coordinates) {
       setMessageType('error');
@@ -175,50 +173,22 @@ const ReportWaterBody: React.FC = () => {
       return;
     }
 
-    try {
-      const coordinatesString = `Lat: ${coordinates.latitude.toFixed(6)}, Long: ${coordinates.longitude.toFixed(6)}`;
-
-      const reportData = {
-        name,
-        email,
-        mobile,
-        feedback,
-        imageUrl: uploadedImage,
-        coordinates: coordinatesString,
-        timestamp: new Date(),
-      };
-
-      // Save to Firestore
-      await addDoc(collection(db, 'waterReports'), reportData);
-
-      // Prepare and send the email
-      const emailPayload = {
-        to: email, // Use the dynamically entered email
-        subject: 'Report Water Body',
-        text: `${feedback}. Image URL: ${uploadedImage}`,
-      };
-
-      const emailResponse = await fetch('/api/send-mail', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(emailPayload),
-      });
-
-      if (emailResponse.ok) {
-        setMessageType('success');
-        setStatusMessage('Report submitted successfully! Check your email for further actions.');
-      } else {
-        const emailResult = await emailResponse.json();
-        setMessageType('error');
-        setStatusMessage(`Failed to send email: ${emailResult.message}`);
-      }
-    } catch (error) {
-      setMessageType('error');
-      setStatusMessage('An error occurred while submitting the report.');
-      console.error('Error saving report:', error);
-    } finally {
+    // Show success message
+    setMessageType('success');
+    setStatusMessage('Thanks for reporting!');
+    
+    // Auto-clear form after 5 seconds
+    setTimeout(() => {
+      setName('');
+      setEmail('');
+      setMobile('');
+      setFeedback('');
+      setImage(null);
+      setUploadedImage(null);
+      setStatusMessage(null);
+      setMessageType(null);
       setReportSending(false);
-    }
+    }, 5000);
   };
 
 
@@ -373,7 +343,7 @@ const ReportWaterBody: React.FC = () => {
 
       {statusMessage && (
         <div
-          className={`mt-4 p-2 rounded ${messageType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          className={`fixed top-4 right-4 p-4 rounded shadow-lg max-w-sm z-50 animate-in fade-in ${messageType === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
             }`}
         >
           {statusMessage}

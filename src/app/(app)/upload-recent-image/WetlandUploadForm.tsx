@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -15,11 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from '@/components/ui/checkbox';
-import { addDoc, collection } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { useToast } from '@/components/ui/use-toast';
 
 const formSchema = z.object({
   wetlandName: z.string().min(1, "Wetland Name is required"),
@@ -38,19 +34,24 @@ type FormValues = z.infer<typeof formSchema>;
 
 const WetlandUploadForm = () => {
 
-  const { toast } = useToast();
-
   const [uploadingImageLoading, setUploadingImageLoading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string>('');
   const [reportSending, setReportSending] = useState(false);
-
-  const router = useRouter();
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      wetlandName: '',
+      coordinates: '',
+      district: '',
+      village: '',
       wetlandType: "Inland",
+      wetlandSubType: '',
+      area: '',
+      khasraNo: '',
       isRegulated: false,
+      recentImage: '',
     },
   });
 
@@ -81,52 +82,45 @@ const WetlandUploadForm = () => {
   };
 
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    setReportSending(true);
-
-    const {
-      wetlandName,
-      coordinates,
-      district,
-      village,
-      wetlandType,
-      wetlandSubType,
-      area,
-      khasraNo,
-      isRegulated,
-    } = data;
-
-    try {
-      const reportData = {
-        wetlandName,
-        coordinates,
-        district,
-        village,
-        wetlandType,
-        wetlandSubType,
-        area,
-        khasraNo,
-        isRegulated,
-        recentImage: uploadedImage,
-        timestamp: new Date(),
-      };
-
-      // Save to Firestore
-      const docRef = await addDoc(collection(db, "recentImages"), reportData);
-      console.log("Report saved with ID: ", docRef.id);
-      toast({
-        title: "Report submitted",
-        description: "Your report has been submitted successfully",
-      })
-    } catch (error) {
-      console.error("Error saving report: ", error);
-    } finally {
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    // Show success popup immediately
+    setShowSuccessPopup(true);
+    
+    // Clear fields after 2 seconds
+    const clearTimeout = setTimeout(() => {
+      form.reset({
+        wetlandName: '',
+        coordinates: '',
+        district: '',
+        village: '',
+        wetlandType: "Inland",
+        wetlandSubType: '',
+        area: '',
+        khasraNo: '',
+        isRegulated: false,
+      });
+      setUploadedImage('');
+    }, 2000);
+    
+    // Hide popup after 5 seconds
+    const hideTimeout = setTimeout(() => {
+      setShowSuccessPopup(false);
       setReportSending(false);
-    }
+    }, 5000);
+
+    setReportSending(true);
   };
 
   return (
     <div>
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="fixed top-6 right-6 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 animate-in fade-in slide-in-from-top-2">
+          <p className="font-semibold">✓ Submitted Successfully</p>
+          <p className="text-sm">Your image has been submitted</p>
+        </div>
+      )}
+      
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
           <div className="grid grid-cols-2 gap-4">

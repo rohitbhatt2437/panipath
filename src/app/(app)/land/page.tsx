@@ -24,7 +24,7 @@ const Page = () => {
     <div className='select-none'>
       <div className='h-16 w-56 xl:w-64 bg-[#FAFAFA] absolute right-0'></div>
       <iframe
-        src="https://ee-asashitrai.projects.earthengine.app/view/water-quality-index"
+        src="https://project-68826416-c60d-4462-922.projects.earthengine.app/view/vivek"
         height={900}
         width="100%"
         style={{ border: 'none' }}

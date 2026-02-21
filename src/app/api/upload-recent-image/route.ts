@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import dbConnect from "@/lib/dbConnect";
 import cloudinary from 'cloudinary';
 
 // Configure Cloudinary
@@ -10,7 +9,6 @@ cloudinary.v2.config({
 });
 
 export async function POST(request: Request) {
-    await dbConnect();
 
     try {
         const formData = await request.formData();

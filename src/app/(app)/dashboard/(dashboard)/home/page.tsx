@@ -183,6 +183,19 @@ const Page: React.FC = () => {
         <p className="text-gray-600">No recent images available.</p>
       )}
       </div>
+
+      {/* Water Threat Section */}
+      <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
+      <h2 className="text-3xl font-bold text-gray-800 mb-4">Water Threat Assessment</h2>
+      <p className="text-gray-600 mb-6">Analyze water threat patterns, built-up changes, and water body shrinkage across Delhi wetlands and water bodies.</p>
+      <div className="w-full h-[900px] rounded-lg overflow-hidden border border-gray-300">
+        <iframe
+          src="https://project-68826416-c60d-4462-922.projects.earthengine.app/view/waterthreat"
+          className="w-full h-full border-none"
+          title="Water Threat Visualization"
+        ></iframe>
+      </div>
+      </div>
     </div>
   );
 };
